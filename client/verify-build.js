@@ -5,18 +5,36 @@ import path from "path";
 
 console.log("🔍 Verifying build environment...");
 
-// Check if postcss.config.cjs exists and is empty
-const postcssPath = path.join(process.cwd(), "postcss.config.cjs");
-if (fs.existsSync(postcssPath)) {
-  const content = fs.readFileSync(postcssPath, "utf8");
-  if (content.includes("tailwindcss")) {
-    console.error("❌ PostCSS config still contains Tailwind CSS!");
-    process.exit(1);
-  } else {
-    console.log("✅ PostCSS config is clean");
+// Check for any PostCSS config files
+const postcssFiles = [
+  "postcss.config.cjs",
+  "postcss.config.js",
+  "postcss.config.mjs",
+];
+
+for (const file of postcssFiles) {
+  const filePath = path.join(process.cwd(), file);
+  if (fs.existsSync(filePath)) {
+    console.error(`❌ Found PostCSS config: ${file}`);
+    fs.unlinkSync(filePath);
+    console.log(`✅ Removed: ${file}`);
   }
-} else {
-  console.log("✅ No PostCSS config found");
+}
+
+// Check for Tailwind config files
+const tailwindFiles = [
+  "tailwind.config.cjs",
+  "tailwind.config.js",
+  "tailwind.config.mjs",
+];
+
+for (const file of tailwindFiles) {
+  const filePath = path.join(process.cwd(), file);
+  if (fs.existsSync(filePath)) {
+    console.error(`❌ Found Tailwind config: ${file}`);
+    fs.unlinkSync(filePath);
+    console.log(`✅ Removed: ${file}`);
+  }
 }
 
 // Check package.json for Tailwind dependencies

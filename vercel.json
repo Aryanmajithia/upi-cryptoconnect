@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd client && rm -rf node_modules package-lock.json && npm install && npm run build",
+  "buildCommand": "cd client && node force-clean.js && npm install && npm run build",
   "outputDirectory": "client/dist",
   "installCommand": "cd client && npm install"
 }
