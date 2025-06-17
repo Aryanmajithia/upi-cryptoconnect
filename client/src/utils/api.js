@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api", // Using relative path for proxy
+  baseURL: import.meta.env.VITE_BACKEND_URL || "/api", // Use environment variable or fallback to proxy
   headers: {
     "Content-Type": "application/json",
   },

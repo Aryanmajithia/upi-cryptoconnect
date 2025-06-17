@@ -19,13 +19,13 @@ export default defineConfig({
     port: 6900,
     proxy: {
       "^/api/.*": {
-        target: "http://localhost:6900",
+        target: process.env.VITE_BACKEND_URL || "http://localhost:1000",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
       "^/loan/.*": {
-        target: "http://localhost:6900",
+        target: process.env.VITE_BACKEND_URL || "http://localhost:1000",
         changeOrigin: true,
         secure: false,
       },
@@ -48,6 +48,8 @@ export default defineConfig({
     },
   },
   define: {
-    "process.env.VITE_BACKEND_URL": JSON.stringify("http://localhost:6900"),
+    "process.env.VITE_BACKEND_URL": JSON.stringify(
+      process.env.VITE_BACKEND_URL || "http://localhost:1000"
+    ),
   },
 });
