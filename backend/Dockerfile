@@ -11,8 +11,8 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
-# Fix gOPD module issue
-RUN node fix-gopd.js
+# Fix dependency issues
+RUN node fix-dependencies.js
 
 # Expose port
 EXPOSE 1000

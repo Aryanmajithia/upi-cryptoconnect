@@ -10,19 +10,13 @@ const gopdFile = path.join(gopdPath, "gOPD.js");
 if (fs.existsSync(path.join(gopdPath, "index.js"))) {
   console.log("Fixing gOPD module...");
 
-  // Create the missing gOPD.js file
+  // Create the missing gOPD.js file with a simpler implementation
   const gopdContent = `'use strict';
 
-var GetIntrinsic = require('get-intrinsic');
-
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
-if ($gOPD) {
-    try {
-        $gOPD([], 'length');
-    } catch (e) {
-        // IE 8 has a broken gOPD
-        $gOPD = null;
-    }
+// Simple implementation that doesn't depend on get-intrinsic
+var $gOPD = Object.getOwnPropertyDescriptor;
+if (typeof $gOPD !== 'function') {
+    $gOPD = null;
 }
 
 module.exports = $gOPD;`;
@@ -35,4 +29,25 @@ module.exports = $gOPD;`;
   }
 } else {
   console.log("gOPD module not found, skipping fix.");
+}
+
+// Also fix the get-intrinsic issue
+const getIntrinsicPath = path.join(
+  process.cwd(),
+  "node_modules",
+  "get-intrinsic"
+);
+const getIntrinsicFile = path.join(getIntrinsicPath, "index.js");
+
+if (fs.existsSync(getIntrinsicFile)) {
+  console.log("Checking get-intrinsic module...");
+
+  try {
+    const content = fs.readFileSync(getIntrinsicFile, "utf8");
+    if (content.includes("GetIntrinsic is not a function")) {
+      console.log("get-intrinsic module appears to be corrupted, skipping...");
+    }
+  } catch (error) {
+    console.log("get-intrinsic module check failed:", error.message);
+  }
 }

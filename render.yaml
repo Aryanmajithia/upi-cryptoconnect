@@ -1,15 +1,17 @@
 services:
   - type: web
     name: upi-cryptoconnect-backend
-    env: docker
+    env: node
     plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    buildCommand: cd backend && npm install --production --legacy-peer-deps
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 1000
+      - key: NODE_VERSION
+        value: 18.19.0
       - key: MONGO_URL
         sync: false
       - key: JWT_SECRET
