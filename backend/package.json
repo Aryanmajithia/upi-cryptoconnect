@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node fix-dependencies.js && node src/index.js",
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "build": "echo 'No build step required for Node.js backend'",
     "clean-install": "rm -rf node_modules package-lock.json && npm install",
@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "cryptojs": "^2.5.3",
     "dotenv": "^16.5.0",
-    "express": "4.17.1",
+    "express": "4.16.4",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1"
   },
@@ -27,7 +27,7 @@
     "nodemon": "^3.1.10"
   },
   "engines": {
-    "node": "18.x",
+    "node": "16.x",
     "npm": ">=8.0.0"
   },
   "overrides": {
