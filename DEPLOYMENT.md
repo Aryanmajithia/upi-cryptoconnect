@@ -63,7 +63,7 @@ This guide will help you deploy your UPI CryptoConnect application using **Verce
    - **Output Directory**: `dist`
 5. Add environment variables:
    ```
-   VITE_BACKEND_URL=https://your-backend-domain.onrender.com
+   VITE_BACKEND_URL=https://upi-cryptoconnect-backend.onrender.com
    ```
 6. Click "Deploy"
 7. Copy the generated domain (e.g., `https://your-app.vercel.app`)
