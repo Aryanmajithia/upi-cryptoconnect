@@ -1,20 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 
-// https://vitejs.dev/config/
+// Minimal Vite config without CSS processing
 export default defineConfig({
-  plugins: [
-    react(),
-    nodePolyfills({
-      globals: {
-        Buffer: true,
-        global: true,
-        process: true,
-      },
-      protocolImports: true,
-    }),
-  ],
+  plugins: [react()],
   server: {
     port: 6900,
     proxy: {
@@ -33,19 +22,6 @@ export default defineConfig({
   },
   build: {
     target: "es2020",
-    rollupOptions: {
-      output: {
-        format: "es",
-      },
-    },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: "es2020",
-      supported: {
-        bigint: true,
-      },
-    },
   },
   define: {
     "process.env.VITE_BACKEND_URL": JSON.stringify(

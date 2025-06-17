@@ -1,5 +1,4 @@
 {
-  "buildCommand": "cd client && node force-clean.js && npm install && npm run build",
-  "outputDirectory": "client/dist",
-  "installCommand": "cd client && npm install"
+  "buildCommand": "cd client && chmod +x simple-build.sh && ./simple-build.sh",
+  "outputDirectory": "client/dist"
 }
