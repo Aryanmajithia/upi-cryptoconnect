@@ -1,8 +1,9 @@
-import Transaction from '../models/Transaction.js';
+import Transaction from "../models/Transaction.js";
 
 export const addTransaction = async (req, res) => {
   try {
-    const { amount, currency, category, description, transactionType } = req.body;
+    const { amount, currency, category, description, transactionType } =
+      req.body;
 
     const newTransaction = new Transaction({
       userId: req.user.id,
@@ -17,17 +18,19 @@ export const addTransaction = async (req, res) => {
     res.json(transaction);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 };
 
 export const getTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ userId: req.user.id }).sort({ timestamp: -1 });
+    const transactions = await Transaction.find({ userId: req.user.id }).sort({
+      timestamp: -1,
+    });
     res.json(transactions);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 };
 
@@ -39,14 +42,20 @@ export const getIncome = async (req, res) => {
 
   try {
     const income = await Transaction.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.user.id), transactionType: 'credit', timestamp: { $gte: startDate, $lt: endDate } } },
-      { $group: { _id: null, totalIncome: { $sum: "$amount" } } }
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(req.user.id),
+          transactionType: "credit",
+          timestamp: { $gte: startDate, $lt: endDate },
+        },
+      },
+      { $group: { _id: null, totalIncome: { $sum: "$amount" } } },
     ]);
 
     res.status(200).json(income);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 };
 
@@ -61,12 +70,68 @@ export const deleteTransaction = async (req, res) => {
     });
 
     if (!transaction) {
-      return res.status(404).json({ msg: 'Transaction not found' });
+      return res.status(404).json({ msg: "Transaction not found" });
     }
 
-    res.json({ msg: 'Transaction deleted successfully' });
+    res.json({ msg: "Transaction deleted successfully" });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
+  }
+};
+
+export const getFilteredTransactions = async (req, res) => {
+  try {
+    const { type, dateRange, amountRange } = req.body;
+    const userId = req.user.id;
+
+    let query = { user: userId };
+
+    // Apply type filter
+    if (type && type !== "all") {
+      query.type = type;
+    }
+
+    // Apply date range filter
+    if (dateRange && dateRange !== "all") {
+      const now = new Date();
+      let startDate = new Date();
+
+      switch (dateRange) {
+        case "today":
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "week":
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case "month":
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+      }
+
+      query.createdAt = { $gte: startDate };
+    }
+
+    // Apply amount range filter
+    if (amountRange && amountRange !== "all") {
+      switch (amountRange) {
+        case "small":
+          query.amount = { $lt: 1000 };
+          break;
+        case "medium":
+          query.amount = { $gte: 1000, $lt: 5000 };
+          break;
+        case "large":
+          query.amount = { $gte: 5000 };
+          break;
+      }
+    }
+
+    const transactions = await Transaction.find(query).sort({ createdAt: -1 });
+
+    res.json(transactions);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
 };

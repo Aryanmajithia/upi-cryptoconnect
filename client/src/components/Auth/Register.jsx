@@ -1,31 +1,98 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from '../../utils/api';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../../utils/api";
+import toast, { Toaster } from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
+import Cookies from "js-cookie";
 
 const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const validateForm = () => {
+    if (!firstName || !lastName || !email || !password) {
+      setError("All fields are required");
+      return false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const a = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, { name: firstName+lastName, email, password });
-      // Navigate to login after successful registration
-      window.location.href = '/login';
+      console.log("Attempting registration...");
+      const response = await axios.post("/api/auth/register", {
+        name: `${firstName} ${lastName}`,
+        email,
+        password,
+      });
+
+      console.log("Registration response:", response.data);
+
+      if (response.data && response.data.token) {
+        // Store token and user data
+        const { token, user } = response.data;
+        Cookies.set("token", token, { expires: 7 });
+        Cookies.set("userEmail", user.email, { expires: 7 });
+        localStorage.setItem("token", token);
+
+        // Update auth context
+        login(token, user);
+
+        // Show success message and redirect
+        toast.success("Registration successful!");
+        navigate("/");
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
-      setError('Registration failed. Please try again.');
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Registration failed. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
-      <div className=" space-y-8 bg-zinc-900 p-8 rounded-lg shadow-lg w-[700px] h-[600px]">
+      <div className="space-y-8 bg-zinc-900 p-8 rounded-lg shadow-lg w-[700px] h-[600px]">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">Create an account</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            Create an account
+          </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
@@ -96,28 +163,36 @@ const Register = () => {
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          {error && (
+            <div className="text-red-500 text-sm text-center p-2 bg-red-900/50 rounded">
+              {error}
+            </div>
+          )}
 
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out"
+              disabled={loading}
+              className="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </div>
         </form>
 
         <div className="mt-6 text-center bottom-3 text-sm text-gray-400">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-green-400 hover:text-green-500">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-medium text-green-400 hover:text-green-500"
+          >
             Log In here
           </Link>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 };
-
 
 export default Register;

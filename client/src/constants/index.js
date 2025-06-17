@@ -1,27 +1,41 @@
-import { people01, people02, people03, facebook, instagram, linkedin, twitter, airbnb, binance, coinbase, dropbox, send, shield, star  } from "../assets";
+import {
+  people01,
+  people02,
+  people03,
+  facebook,
+  instagram,
+  linkedin,
+  twitter,
+  airbnb,
+  binance,
+  coinbase,
+  dropbox,
+  send,
+  shield,
+  star,
+} from "../assets";
 
 export const navLinks = [
   {
     id: "product",
     title: "Take Loans",
-    redirect:'/loans'
+    redirect: "/flash loans",
   },
   {
     id: "clients",
     title: "Crypto to UPI",
-    redirect:'/loans'
+    redirect: "/cryptupi",
   },
   {
     id: "home",
     title: "Stock Market",
-    redirect:'/loans'
+    redirect: "/crypto tracker",
   },
   {
     id: "features",
     title: "Crypto Tracker",
-    redirect:'/loans'
+    redirect: "/crypto tracker",
   },
-  
 ];
 
 export const features = [
