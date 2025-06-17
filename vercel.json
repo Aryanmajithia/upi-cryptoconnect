@@ -1,14 +1,4 @@
 {
-  "buildCommand": "cd client && chmod +x build.sh && ./build.sh",
-  "outputDirectory": "client/dist",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "env": {
-    "VITE_BACKEND_URL": "@vite_backend_url"
-  }
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist"
 }
