@@ -22,6 +22,7 @@ export default defineConfig({
   },
   build: {
     target: "es2020",
+    chunkSizeWarningLimit: 1000,
   },
   define: {
     "process.env.VITE_BACKEND_URL": JSON.stringify(
