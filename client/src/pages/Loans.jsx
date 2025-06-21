@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FiArrowUp } from "react-icons/fi";
 import {
   useAddress,
   useConnect,
@@ -7,21 +6,26 @@ import {
   useBalance,
 } from "@thirdweb-dev/react";
 import axios from "axios";
+import Layout from "../components/Layout";
+import LoanStatus from "../components/Loan/LoanStatus";
+import LoanForm from "../components/Loan/LoanForm";
+import ArbitrageDetails from "../components/Loan/ArbitrageDetails";
+import LoanHistory from "../components/Loan/LoanHistory";
+import Button from "../components/Button";
 
 const Loans = () => {
   const [timer, setTimer] = useState(60);
   const [balance, setBalance] = useState(0);
   const [status, setStatus] = useState("Free");
-  const [flash, setFlash] = useState(false);
-  const [depositAmt, setDepositAmt] = useState("");
-  const [connected, setConnected] = useState(false);
   const [loanAmount, setLoanAmount] = useState("");
   const [foundPair, setFoundPair] = useState("");
   const [estimatedProfit, setEstimatedProfit] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [error, setError] = useState("");
+  const [historyError, setHistoryError] = useState("");
 
   const address = useAddress();
   const connect = useConnect();
@@ -32,7 +36,6 @@ const Loans = () => {
 
   useEffect(() => {
     if (address) {
-      setConnected(true);
       fetchLoanHistory();
       checkBalance();
     }
@@ -50,16 +53,16 @@ const Loans = () => {
 
   const fetchLoanHistory = async () => {
     try {
-      setLoading(true);
+      setHistoryLoading(true);
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/loans/history`
       );
       setHistory(response.data);
     } catch (error) {
       console.error("Error fetching loan history:", error);
-      setError("Failed to fetch loan history");
+      setHistoryError("Failed to fetch loan history");
     } finally {
-      setLoading(false);
+      setHistoryLoading(false);
     }
   };
 
@@ -113,12 +116,11 @@ const Loans = () => {
 
     try {
       setLoading(true);
+      setError("");
       setStatusMessage("Finding arbitrage opportunity...");
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/loans/flash`,
-        {
-          amount: loanAmount,
-        }
+        { amount: loanAmount }
       );
       setFoundPair(response.data.pair);
       setEstimatedProfit(response.data.profit);
@@ -141,14 +143,13 @@ const Loans = () => {
       setLoading(true);
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/loans/execute`,
-        {
-          pair: foundPair,
-          amount: loanAmount,
-        }
+        { pair: foundPair, amount: loanAmount }
       );
       setStatusMessage("Transaction successful!");
       fetchLoanHistory();
       checkBalance();
+      setFoundPair("");
+      setEstimatedProfit("");
     } catch (error) {
       console.error("Error executing transaction:", error);
       setError("Failed to execute transaction");
@@ -158,154 +159,66 @@ const Loans = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Flash Loans</h1>
-        {!connected ? (
-          <button
-            onClick={connect}
-            className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
-          >
-            Connect Wallet
-          </button>
-        ) : (
-          <div className="text-green-500">
-            Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
-          </div>
-        )}
-      </div>
+    <Layout>
+      <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          <header className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-white">Flash Loans</h1>
+            {!address ? (
+              <Button onClick={connect}>Connect Wallet</Button>
+            ) : (
+              <div className="text-sm"></div>
+            )}
+          </header>
 
-      {error && (
-        <div className="bg-red-900 text-white p-4 rounded-lg mb-4">{error}</div>
-      )}
-
-      {statusMessage && (
-        <div className="bg-green-900 text-white p-4 rounded-lg mb-4">
-          {statusMessage}
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <div className="bg-zinc-900 border-zinc-700 border-[1px] p-6 rounded-lg shadow-lg">
-          <p className="text-lg">Contract: 0xabc...123</p>
-          <p className="text-lg">Status: {status}</p>
-          <p className="text-lg">
-            Balance: {usdcBalance?.displayValue || 0} USDC
-          </p>
-        </div>
-        <div className="bg-zinc-900 border-zinc-700 border-[1px] p-6 rounded-lg shadow-lg">
-          <p className="text-lg">Timer: {timer}s</p>
-          <button
-            onClick={handleWithdraw}
-            disabled={loading}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            {loading ? "Processing..." : "Withdraw"}
-          </button>
-          <button
-            onClick={handleArena}
-            disabled={loading}
-            className="mt-4 ml-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            {loading ? "Processing..." : "Lock Arena"}
-          </button>
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <label className="block mb-3 text-xl">Loan Amount (USDC)</label>
-        <input
-          type="number"
-          className="w-full p-3 rounded-lg border-zinc-700 border-[1px] bg-zinc-800 text-white"
-          placeholder="Enter amount"
-          value={loanAmount}
-          onChange={(e) => setLoanAmount(e.target.value)}
-        />
-      </div>
-
-      <div className="mb-6">
-        <button
-          onClick={handleFlash}
-          disabled={loading}
-          className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
-        >
-          {loading ? "Processing..." : "FLASH!"}
-        </button>
-      </div>
-
-      {foundPair && (
-        <div className="bg-zinc-900 border-zinc-700 border-[1px] p-6 rounded-lg shadow-lg mb-8">
-          <div className="flex items-center mt-6">
-            <p className="mr-3">Found Pair:</p>
-            <div className="bg-zinc-800 border-zinc-700 border-[1px] p-3 rounded-lg">
-              {foundPair}
+          {error && (
+            <div className="bg-red-900 bg-opacity-50 text-red-300 p-4 rounded-lg mb-4">
+              {error}
             </div>
-          </div>
-          <div className="flex items-center mt-6">
-            <p className="mr-3">Estimated Profit:</p>
-            <div className="bg-zinc-800 border-zinc-700 border-[1px] p-3 rounded-lg">
-              {estimatedProfit}
+          )}
+          {statusMessage && (
+            <div className="bg-green-900 bg-opacity-50 text-green-300 p-4 rounded-lg mb-4">
+              {statusMessage}
             </div>
-          </div>
-          <div className="mt-6">
-            <button
-              onClick={handleProceed}
-              disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg"
-            >
-              {loading ? "Processing..." : "Proceed"}
-            </button>
+          )}
+
+          <div className="space-y-8">
+            <LoanStatus
+              address={address}
+              balance={usdcBalance?.displayValue || "0"}
+              status={status}
+              timer={timer}
+              onWithdraw={handleWithdraw}
+              onLockArena={handleArena}
+              loading={loading}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <LoanForm
+                loanAmount={loanAmount}
+                setLoanAmount={setLoanAmount}
+                onFlash={handleFlash}
+                loading={loading}
+              />
+              {foundPair && (
+                <ArbitrageDetails
+                  pair={foundPair}
+                  profit={estimatedProfit}
+                  onProceed={handleProceed}
+                  loading={loading}
+                />
+              )}
+            </div>
+
+            <LoanHistory
+              history={history}
+              loading={historyLoading}
+              error={historyError}
+            />
           </div>
         </div>
-      )}
-
-      <div className="bg-zinc-900 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">History</h2>
-        {loading ? (
-          <div className="text-center">Loading history...</div>
-        ) : history.length === 0 ? (
-          <div className="text-center">No transactions yet</div>
-        ) : (
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="border-b-2 border-zinc-700 text-2xl font-light text-zinc-500 p-3">
-                  Date
-                </th>
-                <th className="border-b-2 border-zinc-700 text-2xl font-light text-zinc-500 p-3">
-                  Token
-                </th>
-                <th className="border-b-2 border-zinc-700 text-2xl font-light text-zinc-500 p-3">
-                  Loan
-                </th>
-                <th className="border-b-2 border-zinc-700 text-2xl font-light text-zinc-500 p-3">
-                  P/L
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((entry, index) => (
-                <tr key={index}>
-                  <td className="border-b border-zinc-700 p-3">{entry.date}</td>
-                  <td className="border-b border-zinc-700 p-3">
-                    {entry.token}
-                  </td>
-                  <td className="border-b border-zinc-700 text-yellow-500 p-3">
-                    {entry.loan}
-                  </td>
-                  <td className="border-b border-zinc-700 p-3 text-green-500">
-                    <div className="flex">
-                      <FiArrowUp size={24} />
-                      <div>{entry.pl}</div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
       </div>
-    </div>
+    </Layout>
   );
 };
 

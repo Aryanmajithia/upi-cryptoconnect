@@ -1,39 +1,26 @@
-import React, { useState } from 'react';
-import Pay from '../components/Pay';
-import Request from './Request';
-import Reqpay from '../components/Reqpay';
+import React from "react";
+import Layout from "../components/Layout";
+import SendMoney from "../components/Pay";
+import RequestMoney from "../components/Reqpay";
+import RecentActivity from "../components/RecentTransactions";
 
-
-
-const Payements = () => {
-    const [active, setActive] = useState("upi");
-
-    const toggleHandler = (paymentType) => {
-        setActive(paymentType);
-    }
-
-    return (
-        <div className='flex flex-col bg-black w-full text-white border-t h-screen'>
-            <div className='w-full flex px-8 py-4 gap-10 text-xl'>
-                <div 
-                    onClick={() => toggleHandler("upi")} 
-                    className={`w-full flex justify-center border p-4 rounded-full ${active === "upi" ? 'bg-fadeBlue text-black' : 'bg-boxbg'} hover:bg-fadeBlue hover:text-black`}
-                >
-                    UPI
-                </div>
-                <div 
-                    onClick={() => toggleHandler("metamask")} 
-                    className={`w-full flex justify-center border p-4 rounded-full ${active === "metamask" ? 'bg-fadeBlue text-black' : 'bg-boxbg'} hover:bg-fadeBlue hover:text-black`}
-                >
-                    Requests
-                </div>
-            </div>
-            <div className='h-full flex justify-center'>
-                {active === "upi" && <Pay />}
-                {active === "metamask" && <Request />}
-            </div>
+const SendRequest = () => {
+  return (
+    <Layout>
+      <div className="space-y-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <SendMoney />
+          <RequestMoney />
         </div>
-    )
-}
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-6">
+            Recent Activity
+          </h2>
+          <RecentActivity />
+        </div>
+      </div>
+    </Layout>
+  );
+};
 
-export default Payements;
+export default SendRequest;

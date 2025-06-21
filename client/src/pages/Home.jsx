@@ -1,15 +1,24 @@
+import React from "react";
 import styles from "../style";
-import { Business, CardDeal, Clients, CTA, Footer, Navbar, Stats, Testimonials, Hero } from "../components";
+import {
+  Business,
+  CardDeal,
+  Clients,
+  CTA,
+  Stats,
+  Testimonials,
+  Hero,
+} from "../components";
+import Layout from "../components/Layout";
 
 const Home = () => (
-  <div className="bg-primary w-full overflow-hidden">
-
+  <Layout>
     <div className={`bg-primary ${styles.flexStart}`}>
       <div className={`${styles.boxWidth}`}>
         <Hero />
       </div>
     </div>
-    
+
     <div className={`bg-primary ${styles.paddingX} ${styles.flexCenter}`}>
       <div className={`${styles.boxWidth}`}>
         <Stats />
@@ -18,10 +27,9 @@ const Home = () => (
         <Testimonials />
         <Clients />
         <CTA />
-        <Footer />
       </div>
     </div>
-  </div>
+  </Layout>
 );
 
 export default Home;

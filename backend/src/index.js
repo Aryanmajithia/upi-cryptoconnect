@@ -12,16 +12,33 @@ config({
   path: "./.env",
 });
 const app = express();
+
+// Request Logger Middleware (for debugging deployment)
+app.use((req, res, next) => {
+  console.log(`New request received: ${req.method} ${req.path}`);
+  next();
+});
+
 connectDB();
 
-// CORS configuration for production
+// A more robust CORS configuration
+const whitelist = ["http://localhost:3000", "http://localhost:6900"];
+
+// Add production frontend URL from environment variables if it exists
+if (process.env.FRONTEND_URL) {
+  whitelist.push(process.env.FRONTEND_URL);
+}
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? [process.env.FRONTEND_URL, "https://your-frontend-domain.vercel.app"]
-      : ["http://localhost:6900", "http://localhost:3000"],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));

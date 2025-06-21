@@ -1,248 +1,142 @@
-import React, { useState, useEffect } from "react";
-import "../index.css";
-import {
-  ConnectWallet,
-  useAddress,
-  useContract,
-  useTransferToken,
-} from "@thirdweb-dev/react";
-import axios from "axios";
-import { FiAlertCircle, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import React, { useState } from "react";
+import { useAddress, useContract, useTransferToken } from "@thirdweb-dev/react";
+import axios from "../utils/api";
+import toast from "react-hot-toast";
+import Card from "./Card";
+import Input from "./forms/Input";
+import Button from "./Button";
 
-const UPI = () => {
-  const [upi, setUpi] = useState("");
-  const [option, setOption] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [keyword, setKeyword] = useState("");
-  const [status, setStatus] = useState("");
+const SendMoney = () => {
+  const [upiId, setUpiId] = useState("");
+  const [amount, setAmount] = useState("");
+  const [token, setToken] = useState("USDC"); // Default to USDC
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [transactionDetails, setTransactionDetails] = useState(null);
 
   const walletAddress = useAddress();
   const { contract: usdcToken } = useContract(
     "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8"
   );
-  const { mutateAsync: transferUSDC, isLoading: loadingTransferUSDC } =
-    useTransferToken(usdcToken);
+  const { mutateAsync: transferUSDC } = useTransferToken(usdcToken);
   const { contract: daiToken } = useContract(
     "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357"
   );
-  const { mutateAsync: transferDAI, isLoading: loadingTransferDAI } =
-    useTransferToken(daiToken);
+  const { mutateAsync: transferDAI } = useTransferToken(daiToken);
 
-  const validateInputs = () => {
-    if (!upi) {
-      setError("Please enter a valid UPI ID");
-      return false;
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!walletAddress) {
+      toast.error("Please connect your wallet first.");
+      return;
     }
-    if (!amount || amount <= 0) {
-      setError("Please enter a valid amount");
-      return false;
+    if (!upiId || !amount || parseFloat(amount) <= 0) {
+      toast.error("Please fill in all fields correctly.");
+      return;
     }
-    if (!option) {
-      setError("Please select a token");
-      return false;
-    }
-    return true;
-  };
+    setLoading(true);
+    const toastId = toast.loading("Processing transaction...");
 
-  const handlePayment = async () => {
     try {
-      setLoading(true);
-      setError("");
-      setStatus("Processing payment...");
-
-      // Check if wallet is connected
-      if (!walletAddress) {
-        setError("Please connect your wallet first");
-        return;
-      }
-
-      // Validate inputs
-      if (!validateInputs()) {
-        return;
-      }
-
-      // Get receiver's wallet address
-      const receiverRes = await axios.post(
-        "http://localhost:6900/api/auth/fetchdetail",
-        { upi }
+      // 1. Fetch receiver's wallet address from their UPI ID
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/fetchdetail`,
+        { upi: upiId }
       );
+      const receiverAddress = res.data?.metamaskId;
 
-      if (!receiverRes.data || !receiverRes.data.metamaskId) {
-        setError("Invalid UPI ID or receiver not found");
-        return;
+      if (!receiverAddress) {
+        throw new Error("Could not find a wallet associated with that UPI ID.");
       }
 
-      const receiverAddress = receiverRes.data.metamaskId;
-      const transferAmount = amount * 10 ** 6; // Convert to wei
+      // 2. Perform the token transfer
+      const transferAmount = parseFloat(amount);
+      const transferPayload = {
+        to: receiverAddress,
+        amount: transferAmount,
+      };
 
-      setTransactionDetails({
-        to: upi,
-        amount,
-        token: option,
-        receiverAddress,
-        transferAmount,
-      });
-      setShowConfirmation(true);
-    } catch (error) {
-      console.error("Payment error:", error);
-      setError("Payment failed. Please try again.");
-      setStatus("");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const confirmPayment = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      setShowConfirmation(false);
-
-      // Process token transfer
-      if (transactionDetails.token === "USDC") {
-        await transferUSDC({
-          to: transactionDetails.receiverAddress,
-          amount: transactionDetails.transferAmount.toString(),
-        });
-      } else if (transactionDetails.token === "DAI") {
-        await transferDAI({
-          to: transactionDetails.receiverAddress,
-          amount: transactionDetails.transferAmount.toString(),
-        });
+      if (token === "USDC") {
+        await transferUSDC(transferPayload);
+      } else if (token === "DAI") {
+        await transferDAI(transferPayload);
       }
 
-      // Record transaction
-      await axios.post("http://localhost:6900/pay/paymentWrite", {
+      // 3. Record the transaction in the backend
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pay/paymentWrite`, {
         date: new Date().toISOString(),
-        to: transactionDetails.to,
-        amt: transactionDetails.amount,
+        to: upiId,
+        amt: transferAmount,
         sender: walletAddress,
-        keyword,
-        coin: transactionDetails.token,
+        keyword: message,
+        coin: token,
       });
 
-      setSuccess("Payment successful!");
-      setUpi("");
-      setAmount(0);
-      setKeyword("");
-      setOption("");
-      setTransactionDetails(null);
+      toast.success("Payment sent successfully!", { id: toastId });
+      setUpiId("");
+      setAmount("");
+      setMessage("");
     } catch (error) {
-      console.error("Payment error:", error);
-      setError("Payment failed. Please try again.");
-      setStatus("");
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An unexpected error occurred.";
+      toast.error(errorMessage, { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-boxbg flex flex-col justify-between w-1/4 h-3/5 rounded-lg p-5 mt-20 border">
-      <div className="flex flex-col gap-2">
-        <input
+    <Card>
+      <h2 className="text-2xl font-bold text-white mb-6">Send Money</h2>
+      <form onSubmit={handleSend} className="space-y-6">
+        <Input
+          label="Recipient's UPI ID"
+          name="upiId"
           type="text"
-          placeholder="UPI Id"
-          value={upi}
-          onChange={(e) => setUpi(e.target.value)}
-          className="p-4 bg-neutral-700 outline-none rounded-md"
+          value={upiId}
+          onChange={(e) => setUpiId(e.target.value)}
+          required
+          placeholder="recipient@upi"
         />
-        <input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-          className="p-4 bg-neutral-700 outline-none rounded-md"
-        />
-        <select
-          value={option}
-          onChange={(e) => setOption(e.target.value)}
-          className="p-4 bg-neutral-700 outline-none rounded-md"
-        >
-          <option value="">Select Token</option>
-          <option value="USDC">USDC</option>
-          <option value="DAI">DAI</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Keyword (optional)"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="p-4 bg-neutral-700 outline-none rounded-md"
-        />
-      </div>
-
-      <div className="flex flex-col gap-4">
-        {error && (
-          <div className="bg-red-500 text-white p-4 rounded-lg flex items-center">
-            <FiAlertCircle className="mr-2" />
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="bg-green-500 text-white p-4 rounded-lg flex items-center">
-            <FiCheckCircle className="mr-2" />
-            {success}
-          </div>
-        )}
-        {status && (
-          <div className="bg-blue-500 text-white p-4 rounded-lg flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            {status}
-          </div>
-        )}
-        <button
-          onClick={handlePayment}
-          disabled={loading || loadingTransferUSDC || loadingTransferDAI}
-          className="bg-blue-500 text-white p-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Processing...
-            </div>
-          ) : (
-            "Send Payment"
-          )}
-        </button>
-      </div>
-
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-boxbg p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">Confirm Payment</h3>
-            <div className="mb-4">
-              <p className="mb-2">To: {transactionDetails?.to}</p>
-              <p className="mb-2">
-                Amount: {transactionDetails?.amount} {transactionDetails?.token}
-              </p>
-              <p className="mb-2">
-                Receiver Address: {transactionDetails?.receiverAddress}
-              </p>
-            </div>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setShowConfirmation(false)}
-                className="bg-gray-500 px-4 py-2 rounded hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmPayment}
-                className="bg-green-500 px-4 py-2 rounded hover:bg-green-600"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Input
+            label="Amount"
+            name="amount"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            placeholder="0.00"
+            className="w-full"
+          />
+          <Input
+            label="Token"
+            name="token"
+            type="select"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            className="w-full"
+            options={[
+              { value: "USDC", label: "USDC" },
+              { value: "DAI", label: "DAI" },
+            ]}
+          />
         </div>
-      )}
-    </div>
+        <Input
+          label="Message (Optional)"
+          name="message"
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="For dinner, etc."
+        />
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? "Sending..." : "Send"}
+        </Button>
+      </form>
+    </Card>
   );
 };
 
-export default UPI;
+export default SendMoney;
