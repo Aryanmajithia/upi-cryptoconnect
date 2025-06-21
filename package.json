@@ -1,7 +1,0 @@
-{
-  "name": "upi-cryptoconnect-monorepo",
-  "private": true,
-  "scripts": {
-    "build": "cd client && npm run build"
-  }
-}
