@@ -1,11 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // Minimal Vite config without CSS processing
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), nodePolyfills()],
   server: {
-    port: 6900,
+    port: 5173,
     proxy: {
       "^/api/.*": {
         target: process.env.VITE_BACKEND_URL || "http://localhost:1000",
@@ -26,7 +27,8 @@ export default defineConfig({
   },
   define: {
     "process.env.VITE_BACKEND_URL": JSON.stringify(
-      process.env.VITE_BACKEND_URL || "http://localhost:1000"
+      process.env.VITE_BACKEND_URL || "http://localhost:6900"
     ),
+    global: "globalThis",
   },
 });

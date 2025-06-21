@@ -22,7 +22,11 @@ app.use((req, res, next) => {
 connectDB();
 
 // A more robust CORS configuration
-const whitelist = ["http://localhost:3000", "http://localhost:6900"];
+const whitelist = [
+  "http://localhost:3000",
+  "http://localhost:6900",
+  "http://localhost:5173",
+];
 
 // Add production frontend URL from environment variables if it exists
 if (process.env.FRONTEND_URL) {
