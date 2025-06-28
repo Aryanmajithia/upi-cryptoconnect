@@ -14,12 +14,14 @@ const SendMoney = () => {
   const [loading, setLoading] = useState(false);
 
   const walletAddress = useAddress();
+  // Note: These are example contract addresses on the Polygon Mumbai testnet.
+  // Replace them with your actual token contract addresses on your chosen network.
   const { contract: usdcToken } = useContract(
-    "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8"
+    "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8" // Example USDC address
   );
   const { mutateAsync: transferUSDC } = useTransferToken(usdcToken);
   const { contract: daiToken } = useContract(
-    "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357"
+    "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357" // Example DAI address
   );
   const { mutateAsync: transferDAI } = useTransferToken(daiToken);
 
@@ -38,10 +40,7 @@ const SendMoney = () => {
 
     try {
       // 1. Fetch receiver's wallet address from their UPI ID
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/fetchdetail`,
-        { upi: upiId }
-      );
+      const res = await axios.post(`/api/auth/fetchdetail`, { upi: upiId });
       const receiverAddress = res.data?.metamaskId;
 
       if (!receiverAddress) {
@@ -62,7 +61,7 @@ const SendMoney = () => {
       }
 
       // 3. Record the transaction in the backend
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pay/paymentWrite`, {
+      await axios.post(`/api/pay/paymentWrite`, {
         date: new Date().toISOString(),
         to: upiId,
         amt: transferAmount,
@@ -76,10 +75,18 @@ const SendMoney = () => {
       setAmount("");
       setMessage("");
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred.";
+      console.error("Payment error:", error);
+      let errorMessage = "An unexpected error occurred.";
+
+      if (error.response?.status === 404) {
+        errorMessage =
+          "UPI ID not found. Please check the UPI ID and try again.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast.error(errorMessage, { id: toastId });
     } finally {
       setLoading(false);

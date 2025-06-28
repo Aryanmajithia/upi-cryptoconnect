@@ -35,10 +35,7 @@ const RequestMoney = ({ onNewRequest }) => {
         message,
       };
 
-      await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/money-transfer/request-money`,
-        payload
-      );
+      await axios.post(`/api/money-transfer/request-money`, payload);
 
       toast.success("Money request sent successfully!", { id: toastId });
 

@@ -7,19 +7,6 @@ export default defineConfig({
   plugins: [react(), nodePolyfills()],
   server: {
     port: 5173,
-    proxy: {
-      "^/api/.*": {
-        target: process.env.VITE_BACKEND_URL || "http://localhost:1000",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-      "^/loan/.*": {
-        target: process.env.VITE_BACKEND_URL || "http://localhost:1000",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
   },
   build: {
     target: "es2020",

@@ -14,32 +14,44 @@ const RecentActivity = () => {
     if (!user) return;
     setLoading(true);
     try {
-      const requestsPromise = axios.get("/money-transfer/all-request-money");
-      const transactionsPromise = axios.get(`/transactions/user/${user.email}`);
+      const requestsPromise = axios.get(
+        "/api/money-transfer/all-request-money"
+      );
+      const transactionsPromise = axios.get(
+        `/api/transactions/user/${user.email}`
+      );
 
       const [requestsRes, transactionsRes] = await Promise.all([
         requestsPromise,
         transactionsPromise,
       ]);
 
-      const requests = requestsRes.data.money.requests.map((r) => ({
-        ...r,
-        type: "request",
-      }));
-      const transactions = transactionsRes.data.map((t) => ({
-        ...t,
-        type: "transaction",
-      }));
+      // Handle requests data safely
+      const requests =
+        requestsRes.data?.money?.requests?.map((r) => ({
+          ...r,
+          type: "request",
+        })) || [];
+
+      // Handle transactions data safely
+      const transactions = Array.isArray(transactionsRes.data)
+        ? transactionsRes.data.map((t) => ({
+            ...t,
+            type: "transaction",
+          }))
+        : [];
 
       // Combine and sort by date
       const combined = [...requests, ...transactions].sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
+        (a, b) =>
+          new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
       );
 
       setActivity(combined);
     } catch (error) {
       console.error("Failed to fetch activity:", error);
-      toast.error("Could not load recent activity.");
+      // Don't show error toast for now, just set empty activity
+      setActivity([]);
     } finally {
       setLoading(false);
     }
@@ -72,7 +84,7 @@ const RecentActivity = () => {
           </div>
           <div className="text-right">
             <p className="font-bold text-lg text-yellow-400">
-              {item.amount} {item.token}
+              {item.amount} {item.token || "USDC"}
             </p>
             <Button
               onClick={() => handlePayRequest(item)}

@@ -7,9 +7,9 @@ import dropbox from "./dropbox.png";
 import logo from "./logo.svg";
 import quotes from "./quotes.svg";
 import robot from "./robot.png";
-import send from "./Send.svg";
-import shield from "./Shield.svg";
-import star from "./Star.svg";
+import Send from "./Send.svg";
+import Shield from "./Shield.svg";
+import Star from "./Star.svg";
 import menu from "./menu.svg";
 import close from "./close.svg";
 import google from "./google.svg";
@@ -23,14 +23,15 @@ import twitter from "./twitter.svg";
 import people01 from "./people01.png";
 import people02 from "./people02.png";
 import people03 from "./people03.png";
-import sbi from './sbi1.png'
-import axis from './axis.png'
-import icici from './icici.png'
-import pnb from './pnb.png'
-import hdfc from './hdfc.png'
-import chip from './file.png'
-import visa from './master.png'
-import group from './Group (2).png'
+import pnb from "./pnb.png";
+import sbi1 from "./sbi1.png";
+import axis from "./axis.png";
+import hdfc from "./hdfc.png";
+import icici from "./icici.png";
+import master from "./master.png";
+import pngegg from "./pngegg.png";
+import file from "./file.png";
+import Group from "./Group (2).png";
 
 export {
   airbnb,
@@ -42,9 +43,9 @@ export {
   logo,
   quotes,
   robot,
-  send,
-  shield,
-  star,
+  Send,
+  Shield,
+  Star,
   menu,
   close,
   google,
@@ -58,12 +59,13 @@ export {
   people01,
   people02,
   people03,
-  sbi,
-  hdfc,
-  axis,
-  icici,
   pnb,
-  chip,
-  visa,
-  group
+  sbi1,
+  axis,
+  hdfc,
+  icici,
+  master,
+  pngegg,
+  file,
+  Group,
 };

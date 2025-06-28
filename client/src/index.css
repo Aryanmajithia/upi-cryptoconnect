@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,31 +7,26 @@
 :root {
   --black-gradient: linear-gradient(
     144.39deg,
-    #010101 -278.56%,
-    #0a0a0a -78.47%,
+    #ffffff -278.56%,
+    #6d6d6d -78.47%,
     #11101d 91.61%
   );
   --card-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
-  background-color: #010101;
 }
 
 * {
   scroll-behavior: smooth;
 }
 
-.glow {
-  filter: drop-shadow(0 0 10px rgba(0, 0, 255, 0.5)); /* Example glow effect */
-}
-
 .text-gradient {
   background: radial-gradient(
     64.18% 64.18% at 71.16% 35.69%,
-    #defae8 0.89%,
-    #bef5d3 17.23%,
-    #9df0c0 42.04%,
-    #7debab 55.12%,
-    #5ce696 71.54%,
-    #33cf8e 100%
+    #def9fa 0.89%,
+    #bef3f5 17.23%,
+    #9dedf0 42.04%,
+    #7de7eb 55.12%,
+    #5ce1e6 71.54%,
+    #33bbcf 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -117,10 +112,6 @@
   box-shadow: var(--card-shadow);
 }
 
-.feedback-container .feedback-card:last-child {
-  margin-right: 0px;
-}
-
 .feedback-card {
   background: transparent;
 }
@@ -130,16 +121,31 @@
 }
 
 .blue__gradient {
-  background: linear-gradient(180deg, rgba(200, 150, 255, 0) 0%, #7a42f4 100%);
+  background: linear-gradient(90deg, #33bbcf 0%, #7de7eb 100%);
   filter: blur(123px);
 }
 
 .pink__gradient {
-  background: linear-gradient(90deg, #d4a4f3 0%, #b267fa 100%);
+  background: linear-gradient(90deg, #f4c4f3 0%, #fc67fa 100%);
   filter: blur(900px);
 }
 
 .white__gradient {
-  background: rgba(220, 220, 255, 0.6);
+  background: rgba(255, 255, 255, 0.6);
   filter: blur(750px);
+}
+body {
+  @apply bg-primary text-dimWhite;
+}
+
+.bg-primary {
+  @apply bg-gray-900;
+  background-image: linear-gradient(to bottom right, #050a14, #0d1117, #050a14);
+}
+
+.feature-card {
+  @apply bg-gray-900/50 rounded-2xl border border-gray-800 transition-all duration-300;
+}
+.feature-card:hover {
+  @apply bg-gray-800/60 border-gray-700 shadow-lg shadow-blue-500/10;
 }

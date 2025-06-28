@@ -1,68 +1,130 @@
-import React, { Suspense, useEffect, useState } from "react";
-import styles from "./style";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import LoginPage from "./components/Auth/LoginPage";
-import RegisterPage from "./components/Auth/RegisterPage";
-import { Navbar } from "./components";
-import Dashboard from "./pages/Dashboard.jsx";
-import TransactionForm from "./pages/AddTransaction.jsx";
-import CryptoTracker from "./pages/Crypto.jsx";
-import Loan from "./pages/Loans.jsx";
-import Cookies from "js-cookie";
-import ProtectedRoute from "./PrivateRoute.jsx";
-import NotFound from "./pages/NotFound.jsx";
-import Loader from "./components/Loader.jsx";
-import Bank from "./pages/Bank.jsx";
-import MainTransaction from "./pages/MainTransaction.jsx";
-import Payements from "./pages/Payements.jsx";
+import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
-import RealTimeStockData from "./components/TradingBot/Trading.jsx";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import NewLoginPage from "./components/Auth/NewLoginPage";
+import NewRegisterPage from "./components/Auth/NewRegisterPage";
+import Dashboard from "./pages/Dashboard";
+import NotFound from "./pages/NotFound";
+import PrivateRoute from "./PrivateRoute";
+import FlashLoans from "./pages/FlashLoans";
+import SendAndRequest from "./pages/SendAndRequest";
+import Payements from "./pages/Payements";
+import Loans from "./pages/Loans";
+import Bank from "./pages/Bank";
+import Crypto from "./pages/Crypto";
+import StockMarket from "./pages/StockMarket";
+import Profile from "./pages/Profile";
 
 const App = () => {
-  const [tt, setToken] = useState("");
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    setToken(token);
-  });
-
   return (
-    <AuthProvider>
-      <div className="bg-primary w-full overflow-hidden">
-        <Router>
-          <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-            <div className={`${styles.boxWidth}`}>
-              <Navbar />
-            </div>
-          </div>
-          <Suspense fallback={<Loader />}>
+    <Router>
+      <AuthProvider>
+        <Toaster position="top-center" />
+        <div className="min-h-screen bg-primary flex flex-col">
+          <Navbar />
+          <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/flash loans" element={<Loan />} />
-              <Route path="/crypto tracker" element={<CryptoTracker />} />
-              <Route path="/stock market" element={<RealTimeStockData />} />
-
-              {/* Protected routes */}
-              <Route element={<ProtectedRoute isAuthenticated={!!tt} />}>
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/transaction" element={<TransactionForm />} />
-                <Route path="/cryptupi" element={<Payements />} />
-                <Route path="/KYC" element={<Bank />} />
-                <Route path="/bank detail" element={<MainTransaction />} />
-              </Route>
-
-              {/* Catch-all route */}
-              <Route path="/*" element={<NotFound />} />
+              <Route path="/login" element={<NewLoginPage />} />
+              <Route path="/register" element={<NewRegisterPage />} />
+              <Route
+                path="/flash-loans"
+                element={
+                  <PrivateRoute>
+                    <FlashLoans />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/crypto-tracker"
+                element={
+                  <PrivateRoute>
+                    <Crypto />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/stock-market"
+                element={
+                  <PrivateRoute>
+                    <StockMarket />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/payments"
+                element={
+                  <PrivateRoute>
+                    <Payements />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/send-and-request"
+                element={
+                  <PrivateRoute>
+                    <SendAndRequest />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/loans"
+                element={
+                  <PrivateRoute>
+                    <Loans />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/bank"
+                element={
+                  <PrivateRoute>
+                    <Bank />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/kyc"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/bank-detail"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
             </Routes>
-          </Suspense>
-        </Router>
-      </div>
-    </AuthProvider>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
+    </Router>
   );
 };
 

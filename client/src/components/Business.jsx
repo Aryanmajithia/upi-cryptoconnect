@@ -28,16 +28,16 @@ const Business = () => (
   <section id="features" className={layout.section}>
     <div className={layout.sectionInfo}>
       <h2 className={styles.heading2}>
-        Focus on your business, <br className="sm:block hidden" /> we'll handle
-        the payments.
+        You handle the finances, <br className="sm:block hidden" /> we'll handle
+        the technology.
       </h2>
       <p className={`${styles.paragraph} max-w-[470px] mt-5`}>
-        With our platform, you can accept cryptocurrency payments and receive
-        settlements in your local currency. We bridge the gap between the old
-        and new financial systems.
+        With CoinTrustBank, you can focus on your financial goals. We provide
+        the secure and robust platform to help you send, receive, and manage
+        your digital assets with confidence.
       </p>
 
-      <Button className="mt-10">Learn More</Button>
+      <Button styles={`mt-10`}>Explore Features</Button>
     </div>
 
     <div className={`${layout.sectionImg} flex-col`}>

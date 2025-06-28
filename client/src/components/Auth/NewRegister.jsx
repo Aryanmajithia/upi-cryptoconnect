@@ -8,7 +8,7 @@ import Card from "../Card";
 import Input from "../forms/Input";
 import Button from "../Button";
 
-const Register = () => {
+const NewRegister = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -126,4 +126,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default NewRegister;

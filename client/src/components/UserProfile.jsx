@@ -6,14 +6,13 @@ import { FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaCopy } from "react-icons/fa";
 import { IoIosCheckmarkCircle } from "react-icons/io";
-import api from "../utils/api"
+import api from "../utils/api";
 
 const UserProfile = () => {
   const [upiId, setUpiId] = useState(".........");
   const [metamaskId, setMetamaskId] = useState(".........");
   const [copym, setCopym] = useState(false);
   const [copyu, setCopyu] = useState(false);
-
 
   const [name, setName] = useState("User");
   const [email, setEmail] = useState("");
@@ -28,11 +27,11 @@ const UserProfile = () => {
 
   useEffect(() => {
     try {
-      const a = Cookies.get('userEmail');
+      const a = Cookies.get("userEmail");
       console.log(a);
       // setEmail(a);
       const USER = async () => {
-        const res = await api.post(`/auth/fetchdetail`,{ email: a } );
+        const res = await api.post(`/api/auth/fetchdetail`, { email: a });
         const details = await res.data.user;
         console.log(details);
         setEmail(details.email || a || "..");
@@ -43,7 +42,7 @@ const UserProfile = () => {
         setDob(details.dob || "..");
         setAddress(details.address || "..");
         setStatus(details.status) || "..";
-        setUpiId(details.upiId );
+        setUpiId(details.upiId);
         setMetamaskId(details.metamaskId);
         setKyc(details.kyc);
       };
@@ -52,7 +51,6 @@ const UserProfile = () => {
       console.log(error);
     }
   }, []);
-
 
   const logoutHandler = () => {
     Cookies.remove("token");
@@ -191,7 +189,11 @@ const UserProfile = () => {
         {/* down box */}
         <div className="p-4 border-t flex flex-col items-center h-1/3">
           <Link to="/KYC" className="text-linkcolor">
-            {kyc?<p className="text-icon">KYC Completed</p>: <p className="text-red-500">Complete your KYC.</p>}
+            {kyc ? (
+              <p className="text-icon">KYC Completed</p>
+            ) : (
+              <p className="text-red-500">Complete your KYC.</p>
+            )}
           </Link>
           <p className="text-linkcolor">Change password</p>
           <p className="text-linkcolor">Show QR</p>

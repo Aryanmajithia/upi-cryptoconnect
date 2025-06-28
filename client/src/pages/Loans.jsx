@@ -6,7 +6,6 @@ import {
   useBalance,
 } from "@thirdweb-dev/react";
 import axios from "axios";
-import Layout from "../components/Layout";
 import LoanStatus from "../components/Loan/LoanStatus";
 import LoanForm from "../components/Loan/LoanForm";
 import ArbitrageDetails from "../components/Loan/ArbitrageDetails";
@@ -159,66 +158,64 @@ const Loans = () => {
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <header className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-white">Flash Loans</h1>
-            {!address ? (
-              <Button onClick={connect}>Connect Wallet</Button>
-            ) : (
-              <div className="text-sm"></div>
-            )}
-          </header>
-
-          {error && (
-            <div className="bg-red-900 bg-opacity-50 text-red-300 p-4 rounded-lg mb-4">
-              {error}
-            </div>
+    <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        <header className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Flash Loans</h1>
+          {!address ? (
+            <Button onClick={connect}>Connect Wallet</Button>
+          ) : (
+            <div className="text-sm"></div>
           )}
-          {statusMessage && (
-            <div className="bg-green-900 bg-opacity-50 text-green-300 p-4 rounded-lg mb-4">
-              {statusMessage}
-            </div>
-          )}
+        </header>
 
-          <div className="space-y-8">
-            <LoanStatus
-              address={address}
-              balance={usdcBalance?.displayValue || "0"}
-              status={status}
-              timer={timer}
-              onWithdraw={handleWithdraw}
-              onLockArena={handleArena}
+        {error && (
+          <div className="bg-red-900 bg-opacity-50 text-red-300 p-4 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
+        {statusMessage && (
+          <div className="bg-green-900 bg-opacity-50 text-green-300 p-4 rounded-lg mb-4">
+            {statusMessage}
+          </div>
+        )}
+
+        <div className="space-y-8">
+          <LoanStatus
+            address={address}
+            balance={usdcBalance?.displayValue || "0"}
+            status={status}
+            timer={timer}
+            onWithdraw={handleWithdraw}
+            onLockArena={handleArena}
+            loading={loading}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <LoanForm
+              loanAmount={loanAmount}
+              setLoanAmount={setLoanAmount}
+              onFlash={handleFlash}
               loading={loading}
             />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <LoanForm
-                loanAmount={loanAmount}
-                setLoanAmount={setLoanAmount}
-                onFlash={handleFlash}
+            {foundPair && (
+              <ArbitrageDetails
+                pair={foundPair}
+                profit={estimatedProfit}
+                onProceed={handleProceed}
                 loading={loading}
               />
-              {foundPair && (
-                <ArbitrageDetails
-                  pair={foundPair}
-                  profit={estimatedProfit}
-                  onProceed={handleProceed}
-                  loading={loading}
-                />
-              )}
-            </div>
-
-            <LoanHistory
-              history={history}
-              loading={historyLoading}
-              error={historyError}
-            />
+            )}
           </div>
+
+          <LoanHistory
+            history={history}
+            loading={historyLoading}
+            error={historyError}
+          />
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

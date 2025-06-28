@@ -1,35 +1,36 @@
 import React from "react";
 import styles from "../style";
 import {
+  Billing,
   Business,
   CardDeal,
-  Clients,
+  Partners,
   CTA,
   Stats,
   Testimonials,
   Hero,
 } from "../components";
-import Layout from "../components/Layout";
 
 const Home = () => (
-  <Layout>
-    <div className={`bg-primary ${styles.flexStart}`}>
+  <div className="w-full">
+    <div className={`${styles.flexStart}`}>
       <div className={`${styles.boxWidth}`}>
         <Hero />
       </div>
     </div>
 
-    <div className={`bg-primary ${styles.paddingX} ${styles.flexCenter}`}>
+    <div className={`${styles.paddingX} ${styles.flexCenter}`}>
       <div className={`${styles.boxWidth}`}>
         <Stats />
         <Business />
+        <Billing />
         <CardDeal />
         <Testimonials />
-        <Clients />
+        <Partners />
         <CTA />
       </div>
     </div>
-  </Layout>
+  </div>
 );
 
 export default Home;
