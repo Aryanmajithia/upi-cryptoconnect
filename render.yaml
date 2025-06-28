@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 1000
       - key: NODE_VERSION
-        value: 16.20.0
+        value: 18.20.0
       - key: MONGO_URL
         sync: false
       - key: JWT_SECRET

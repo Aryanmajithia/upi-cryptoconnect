@@ -1,134 +1,117 @@
 # UPI CryptoConnect
 
-A modern web application that integrates UPI payments with cryptocurrency transactions, providing a seamless interface for managing both traditional and digital currency operations.
+A secure and modern platform for cryptocurrency transactions using UPI integration.
 
 ## Features
 
-- **UPI Integration**: Seamless UPI payment processing
-- **Cryptocurrency Support**: Track and manage crypto transactions
-- **User Authentication**: Secure login and registration system
-- **Transaction Management**: View and manage all transactions
-- **Dashboard**: Real-time overview of financial activities
-- **Profile Management**: User profile and settings
-- **Scratch Cards**: Interactive reward system
+- Secure user authentication
+- Cryptocurrency tracking
+- UPI payment integration
+- Real-time transaction monitoring
+- Flash loan functionality
+- Bank account linking
+- Modern UI with responsive design
 
 ## Tech Stack
 
-### Frontend
-
-- React.js
-- Vite
-- Tailwind CSS
-- ThirdWeb SDK
-- Chart.js
-- React Router
-
 ### Backend
-
 - Node.js
 - Express.js
 - MongoDB
 - JWT Authentication
-- Razorpay Integration
+- Security middleware (helmet, rate-limiting)
 
-## Prerequisites
+### Frontend
+- React.js
+- Vite
+- Tailwind CSS
+- React Router
+- Context API for state management
 
-- Node.js (v16 or higher)
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 18.0.0
 - MongoDB
-- npm or yarn
-- Git
+- npm or pnpm
 
-## Installation
+### Installation
 
 1. Clone the repository:
-
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/yourusername/upi-cryptoconnect.git
 cd upi-cryptoconnect
 ```
 
 2. Install backend dependencies:
-
 ```bash
 cd backend
+cp .env.example .env  # Copy and configure environment variables
 npm install
 ```
 
 3. Install frontend dependencies:
-
 ```bash
-cd ../client
+cd client
 npm install
 ```
 
-4. Create environment files:
-   - Create `.env` in the backend directory with:
-   ```
-   PORT=1000
-   MONGO_URL=mongodb://localhost:27017/upi-cryptoconnect
-   JWT_SECRET=your_secure_jwt_secret_123
-   CURRENCY_API_KEY=your_currency_api_key
-   CRYPTO_API_KEY=your_crypto_api_key
-   RAZORPAY_KEY_ID=your_razorpay_key_id
-   RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-   ```
+4. Configure environment variables:
+- Backend: Edit `.env` file with your configuration
+- Frontend: Create `.env` file with:
+  ```
+  VITE_BACKEND_URL=http://localhost:6900
+  ```
 
-## Running the Application
+### Running the Application
 
-1. Start MongoDB:
-
-```bash
-mongod
-```
-
-2. Start the backend server:
-
+1. Start the backend server:
 ```bash
 cd backend
-npm start
+npm run dev
 ```
 
-3. Start the frontend development server:
-
+2. Start the frontend development server:
 ```bash
 cd client
 npm run dev
 ```
 
-4. Access the application:
-
-- Frontend: http://localhost:6900
+3. Access the application:
+- Frontend: http://localhost:5173
 - Backend API: http://localhost:6900
 
-## Project Structure
+## Security Features
 
-```
-upi-cryptoconnect/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   └── utils/
-│   └── .env
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── utils/
-│   └── public/
-└── README.md
-```
+- JWT-based authentication
+- Rate limiting
+- CORS protection
+- Helmet security headers
+- Input validation
+- Error handling
+- Secure cookie settings
 
-## API Endpoints
+## API Documentation
 
-- `/api/auth/register` - User registration
-- `/api/auth/login` - User login
-- `/api/transactions` - Transaction management
-- `/api/crypto` - Cryptocurrency operations
-- `/api/upi` - UPI payment processing
+### Authentication Endpoints
+- POST `/api/auth/register` - User registration
+- POST `/api/auth/login` - User login
+- GET `/api/auth/verify` - Verify JWT token
+
+### Transaction Endpoints
+- POST `/api/transactions` - Create transaction
+- GET `/api/transactions` - Get user transactions
+- GET `/api/transactions/filtered` - Get filtered transactions
+
+### Bank Integration
+- POST `/api/bank/add` - Add bank details
+- GET `/api/bank/all-users` - Get all users
+- GET `/api/bank/user-details` - Get logged user details
+
+### Money Transfer
+- POST `/api/money-transfer/create` - Create money transfer
+- GET `/api/money-transfer` - Get transfer history
 
 ## Contributing
 
@@ -140,8 +123,11 @@ upi-cryptoconnect/
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the ISC License.
 
-## Support
+## Acknowledgments
 
-For support, please open an issue in the repository.
+- React Icons
+- Tailwind CSS
+- Chart.js
+- ThirdWeb SDK

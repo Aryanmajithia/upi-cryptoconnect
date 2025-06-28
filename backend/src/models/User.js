@@ -16,13 +16,15 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    preferredCurrency: { type: String, default: "USD" },
-    age: { type: Number },
-    dob: { type: Date },
-    address: { type: String },
-    status: { type: String },
-    mobile: { type: String },
-    metamaskId: {
+    phone: {
+      type: String,
+      default: null,
+    },
+    address: {
+      type: String,
+      default: null,
+    },
+    walletAddress: {
       type: String,
       default: null,
     },
@@ -30,7 +32,55 @@ const UserSchema = new Schema(
       type: String,
       default: null,
     },
-    kyc: { type: Boolean, default: false },
+    bankAccount: {
+      type: String,
+      default: null,
+    },
+    ifscCode: {
+      type: String,
+      default: null,
+    },
+    balance: {
+      type: Number,
+      default: 0,
+    },
+    transactionCount: {
+      type: Number,
+      default: 0,
+    },
+    preferredCurrency: {
+      type: String,
+      default: "INR",
+    },
+    age: {
+      type: Number,
+    },
+    dob: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      default: "active",
+    },
+    mobile: {
+      type: String,
+    },
+    metamaskId: {
+      type: String,
+      default: null,
+    },
+    kyc: {
+      type: Boolean,
+      default: false,
+    },
+    isWalletConnected: {
+      type: Boolean,
+      default: false,
+    },
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

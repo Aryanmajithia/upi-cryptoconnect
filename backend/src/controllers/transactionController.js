@@ -135,3 +135,17 @@ export const getFilteredTransactions = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+export const getTransactionsByUser = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    // For now, return empty array since we don't have email-based transactions
+    // In a real implementation, you would query by user email
+    // This prevents the 404 error and allows the frontend to continue working
+    res.status(200).json([]);
+  } catch (err) {
+    console.error("getTransactionsByUser error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
